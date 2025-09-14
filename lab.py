@@ -157,16 +157,16 @@ CONTROLS = [
         control_id="2.3.11.7",
         title="Сетевой доступ: ограничить клиентов, которым разрешено выполнять удаленные вызовы SAM",
         description="Определяет протокол аутентификации для сетевых входов",
-        rationale="Защита от слабых протоколов аутентификации LM и NTLM",
+        rationale="Защита от пользователей----",
         reference="HKLM\\SYSTEM\\CurrentControlSet\\Control\\Lsa\\RestrictRemoteSAM",
         check=num_2_3_10_10,
         expected_text="O:BAG:BAD:(A;;RC;;;BA)"
     ),
     Control(
         control_id="18.10.75.2.1",
-        title="Сетевой доступ: ограничить клиентов, которым разрешено выполнять удаленные вызовы SAM",
-        description="Определяет протокол аутентификации для сетевых входов",
-        rationale="Защита от слабых протоколов аутентификации LM и NTLM",
+        title="Настройка Windows Defender SmartScreen",
+        description="Windows Defender SmartScreen помогает обеспечивать безопасность ПК",
+        rationale="Предупреждая пользователей перед запуском нераспознанных программ, загруженных из Интернета",
         reference="SOFTWARE\Policies\Microsoft\Windows\System",
         check=num_18_10_75_2_1,
         expected_text="1 и Block"
