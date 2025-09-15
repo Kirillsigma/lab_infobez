@@ -124,6 +124,100 @@ def num_18_10_75_2_1():
     except FileNotFoundError:
         return False, "Параметр не найден"
 
+def num_18_10_56_3_3_2():
+    try:
+        key = winreg.OpenKey(
+            winreg.HKEY_LOCAL_MACHINE,
+            r"SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services",
+            0,
+            winreg.KEY_READ
+        )
+
+        value, reg_type = winreg.QueryValueEx(key, "fDisableCcm")
+        winreg.CloseKey(key)
+
+        print(value)
+        ok = (value == 1)
+        return ok, f"Текущее значение: {value}"
+
+    except FileNotFoundError:
+        return False, "Параметр fDisableCсm не найден в реестре (используется значение по умолчанию - разрешено)"
+
+def num_5_19():
+    try:
+        key = winreg.OpenKey(
+            winreg.HKEY_LOCAL_MACHINE,
+            r"SYSTEM\CurrentControlSet\Services\wercplsupport",
+            0,
+            winreg.KEY_READ
+        )
+
+        value, reg_type = winreg.QueryValueEx(key, "Start")
+        winreg.CloseKey(key)
+
+        print(value)
+        ok = (value == 4)
+        return ok, f"Текущее значение: {value}"
+
+    except FileNotFoundError:
+        return False, "Параметр Start не найден в реестре (используется значение по умолчанию - разрешено)"
+
+def num_18_9_20_1_6():
+    try:
+        key = winreg.OpenKey(
+            winreg.HKEY_LOCAL_MACHINE,
+            r"SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer",
+            0,
+            winreg.KEY_READ
+        )
+
+        value, reg_type = winreg.QueryValueEx(key, "NoWebServices")
+        winreg.CloseKey(key)
+
+        print(value)
+        ok = (value == 1)
+        return ok, f"Текущее значение: {value}"
+
+    except FileNotFoundError:
+        return False, "Параметр NoWebServices не найден в реестре (используется значение по умолчанию - разрешено)"
+
+def num_5_11():
+    try:
+        key = winreg.OpenKey(
+            winreg.HKEY_LOCAL_MACHINE,
+            r"SYSTEM\CurrentControlSet\Services\FTPSVC",
+            0,
+            winreg.KEY_READ
+        )
+
+        value, reg_type = winreg.QueryValueEx(key, "Start")
+        winreg.CloseKey(key)
+
+        print(value)
+        ok = (value == 4)
+        return ok, f"Текущее значение: {value}"
+
+    except FileNotFoundError:
+        return False, "Параметр Start не найден в реестре (используется значение по умолчанию - Disabled or Not Installed)"
+
+def num_18_5_11():
+    try:
+        key = winreg.OpenKey(
+            winreg.HKEY_LOCAL_MACHINE,
+            r"SYSTEM\CurrentControlSet\Services\TCPIP6\Parameters",
+            0,
+            winreg.KEY_READ
+        )
+
+        value, reg_type = winreg.QueryValueEx(key, "TcpMaxDataRetransmissions")
+        winreg.CloseKey(key)
+
+        print(value)
+        ok = (value == 3)
+        return ok, f"Текущее значение: {value}"
+
+    except FileNotFoundError:
+        return False, "Параметр TcpMaxDataRetransmissions не найден в реестре (используется значение по умолчанию - Disabled or Not Installed)"
 
 CONTROLS = [
     Control(
@@ -170,6 +264,51 @@ CONTROLS = [
         reference="SOFTWARE\Policies\Microsoft\Windows\System",
         check=num_18_10_75_2_1,
         expected_text="1 и Block"
+    ),
+    Control(
+        control_id="18.10.56.3.3.2",
+        title="Не разрешать перенаправление COM-портов",
+        description="Блокирует перенаправление данных на COM-порты клиента в RDP-сессиях",
+        rationale="Уменьшение поверхности атаки и предотвращение эксфильтрации данных",
+        reference="HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows NT\\Terminal Services\\fDisableCom",
+        check=num_18_10_56_3_3_2,
+        expected_text="1 (Заблокировано)"
+    ),
+    Control(
+        control_id="5.19",
+        title="Поддержка панели управления отчетов о проблемах и их решений (wercplsupport)",
+        description="Эта служба обеспечивает поддержку просмотра, отправки и удаления системных отчетов о проблемах для панели управления Отчеты о проблемах и их решения",
+        rationale="Эта служба участвует в процессе отображения/отправки проблем и решений в/из Microsoft",
+        reference="HKLM\SYSTEM\CurrentControlSet\Services\wercplsupport:Start",
+        check=num_5_19,
+        expected_text="4 (остановлено)"
+    ),
+    Control(
+        control_id="18.9.20.1.6",
+        title="Отключить загрузку из Интернета для мастеров веб-публикации и онлайн-заказов",
+        description="Этот параметр политики управляет тем, будет ли Windows загружать список поставщиков для мастеров веб-публикации и онлайн-заказов",
+        rationale="Windows предотвращает загрузку поставщиков; отображаются только поставщики услуг, сохраненные в локальном реестре.",
+        reference="HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer:NoWebServices",
+        check=num_18_9_20_1_6,
+        expected_text="1 (включено)"
+    ),
+    Control(
+        control_id="5.11",
+        title="--------",
+        description="----------",
+        rationale="------",
+        reference="HKLM\SYSTEM\CurrentControlSet\Services\FTPSVC:Start",
+        check=num_5_11,
+        expected_text="4 (Disabled)"
+    ),
+    Control(
+        control_id="18.5.11",
+        title="--------",
+        description="----------",
+        rationale="------",
+        reference="HKLM\SYSTEM\CurrentControlSet\Services\TCPIP6\Parameters:TcpMaxDataRetransmissions",
+        check=num_18_5_11,
+        expected_text="3 (Enabled)"
     )
 ]
 
