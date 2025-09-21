@@ -82,7 +82,7 @@ def num_2_3_11_7():
         winreg.CloseKey(key)
 
         ok = (value == 5)
-        return ok, f"Текущее значение: {value} (требуется: 5)"
+        return ok, f"Текущее значение: {value}"
 
     except FileNotFoundError:
         return False, "Параметр не найден"
@@ -219,6 +219,101 @@ def num_18_5_11():
     except FileNotFoundError:
         return False, "Параметр TcpMaxDataRetransmissions не найден в реестре (используется значение по умолчанию - Disabled or Not Installed)"
 
+def num_18_10_92_4_1():
+    try:
+        key = winreg.OpenKey(
+            winreg.HKEY_LOCAL_MACHINE,
+            r"SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate",
+            0,
+            winreg.KEY_READ
+        )
+
+        value, reg_type = winreg.QueryValueEx(key, "ManagePreviewBuildsPolicyValue")
+        winreg.CloseKey(key)
+
+        print(value)
+        ok = (value == 1)
+        return ok, f"Текущее значение: {value}"
+
+    except FileNotFoundError:
+        return False, "Параметр ManagePreviewBuildsPolicyValue не найден в реестре (используется значение по умолчанию - Отключено)"
+
+def num_9_3_9():
+    try:
+        key = winreg.OpenKey(
+            winreg.HKEY_LOCAL_MACHINE,
+            r"SOFTWARE\Policies\Microsoft\WindowsFirewall\PublicProfile\Logging",
+            0,
+            winreg.KEY_READ
+        )
+
+        value, reg_type = winreg.QueryValueEx(key, "LogSuccessfulConnections")
+        winreg.CloseKey(key)
+
+        print(value)
+        ok = (value == 1)
+        return ok, f"Текущее значение: {value}"
+
+    except FileNotFoundError:
+        return False, "Параметр LogSuccessfulConnections не найден в реестре (используется значение по умолчанию - Отключено)"
+
+def num_18_10_9_3_11():
+    try:
+        key = winreg.OpenKey(
+            winreg.HKEY_LOCAL_MACHINE,
+            r"SOFTWARE\Policies\Microsoft\FVE",
+            0,
+            winreg.KEY_READ
+        )
+
+        value, reg_type = winreg.QueryValueEx(key, "RDVPassphrase")
+        winreg.CloseKey(key)
+
+        print(value)
+        ok = (value == 0)
+        return ok, f"Текущее значение: {value}"
+
+    except FileNotFoundError:
+        return False, "Параметр RDVPassphrase не найден в реестре (используется значение по умолчанию"
+
+def num_18_9_4_2():
+    try:
+        key = winreg.OpenKey(
+            winreg.HKEY_LOCAL_MACHINE,
+            r"SOFTWARE\Policies\Microsoft\Windows\CredentialsDelegation",
+            0,
+            winreg.KEY_READ
+        )
+
+        value, reg_type = winreg.QueryValueEx(key, "AllowProtectedCreds")
+        winreg.CloseKey(key)
+
+        print(value)
+        ok = (value == 1)
+        return ok, f"Текущее значение: {value}"
+
+    except FileNotFoundError:
+        return False, "Параметр AllowProtectedCreds не найден в реестре (используется значение по умолчанию"
+
+def num_18_10_9_2_5():
+    try:
+        key = winreg.OpenKey(
+            winreg.HKEY_LOCAL_MACHINE,
+            r"SOFTWARE\Policies\Microsoft\FVE",
+            0,
+            winreg.KEY_READ
+        )
+
+        value, reg_type = winreg.QueryValueEx(key, "OSRecoveryPassword")
+        winreg.CloseKey(key)
+
+        print(value)
+        ok = (value == 1)
+        return ok, f"Текущее значение: {value}"
+
+    except FileNotFoundError:
+        return False, "Параметр OSRecoveryPassword не найден в реестре (используется значение по умолчанию)"
+
 CONTROLS = [
     Control(
         control_id="17.6.1",
@@ -245,7 +340,7 @@ CONTROLS = [
         rationale="Защита от слабых протоколов аутентификации LM и NTLM",
         reference="HKLM\\SYSTEM\\CurrentControlSet\\Control\\Lsa\\LmCompatibilityLevel",
         check=num_2_3_11_7,
-        expected_text="5 (Send NTLMv2 response only. Refuse LM & NTLM)"
+        expected_text="5"
     ),
     Control(
         control_id="2.3.11.7",
@@ -263,7 +358,7 @@ CONTROLS = [
         rationale="Предупреждая пользователей перед запуском нераспознанных программ, загруженных из Интернета",
         reference="SOFTWARE\Policies\Microsoft\Windows\System",
         check=num_18_10_75_2_1,
-        expected_text="1 и Block"
+        expected_text="1"
     ),
     Control(
         control_id="18.10.56.3.3.2",
@@ -272,7 +367,7 @@ CONTROLS = [
         rationale="Уменьшение поверхности атаки и предотвращение эксфильтрации данных",
         reference="HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows NT\\Terminal Services\\fDisableCom",
         check=num_18_10_56_3_3_2,
-        expected_text="1 (Заблокировано)"
+        expected_text="1"
     ),
     Control(
         control_id="5.19",
@@ -281,7 +376,7 @@ CONTROLS = [
         rationale="Эта служба участвует в процессе отображения/отправки проблем и решений в/из Microsoft",
         reference="HKLM\SYSTEM\CurrentControlSet\Services\wercplsupport:Start",
         check=num_5_19,
-        expected_text="4 (остановлено)"
+        expected_text="4"
     ),
     Control(
         control_id="18.9.20.1.6",
@@ -294,21 +389,66 @@ CONTROLS = [
     ),
     Control(
         control_id="5.11",
-        title="--------",
-        description="----------",
-        rationale="------",
+        title="Обеспечение настройки «Служба Microsoft FTP (FTPSVC)» в значение «Отключено» или «Не установлено»",
+        description="Позволяет серверу работать в качестве FTP-сервера (File Transfer Protocol).",
+        rationale="Размещение FTP-сервера (особенно незащищенного FTP-сервера) на рабочей станции представляет повышенный риск безопасности, так как поверхность атаки этой рабочей станции значительно увеличивается.",
         reference="HKLM\SYSTEM\CurrentControlSet\Services\FTPSVC:Start",
         check=num_5_11,
         expected_text="4 (Disabled)"
     ),
     Control(
         control_id="18.5.11",
-        title="--------",
-        description="----------",
-        rationale="------",
+        title=" Обеспечение настройки «MSS: (TcpMaxDataRetransmissions IPv6) Сколько раз повторно передаются неподтвержденные данные» в значение «Включено: 3»",
+        description="Этот параметр контролирует количество повторных передач TCP отдельного сегмента данных (неподключенного сегмента) перед прерыванием соединения.",
+        rationale="Злоумышленник может исчерпать ресурсы целевого компьютера, если он никогда не отправляет подтверждения для данных, переданных целевым компьютером.",
         reference="HKLM\SYSTEM\CurrentControlSet\Services\TCPIP6\Parameters:TcpMaxDataRetransmissions",
         check=num_18_5_11,
         expected_text="3 (Enabled)"
+    ),
+    Control(
+        control_id="18.10.92.4.1",
+        title="Обеспечение настройки «Управление сборками предварительной оценки» в значение «Отключено»",
+        description="Этот параметр политики управляет тем, какие обновления получаются до официального выпуска обновления.",
+        rationale="Разрешение экспериментальных функций в управляемой корпоративной среде может быть рискованным, поскольку это может привести к появлению ошибок и уязвимостей в системах, облегчая злоумышленнику получение доступа.",
+        reference="HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate:ManagePreviewBuildsPolicyValue",
+        check=num_18_10_92_4_1,
+        expected_text="1"
+    ),
+    Control(
+        control_id="9.3.9",
+        title="Обеспечение настройки «Брандмауэр Windows: Общедоступная: Ведение журнала: Регистрировать успешные подключения» в значение «Да»",
+        description="Используйте этот параметр, чтобы регистрировать случаи, когда Брандмауэр Windows в режиме повышенной безопасности разрешает входящее подключение. Журнал записывает, почему и когда было установлено подключение.",
+        rationale="Если события не записываются, может быть трудно или невозможно определить первопричину проблем системы или несанкционированные действия злоумышленников.",
+        reference="HKLM\SOFTWARE\Policies\Microsoft\WindowsFirewall\PublicProfile\Logging:LogSuccessfulConnections",
+        check=num_9_3_9,
+        expected_text="1"
+    ),
+    Control(
+        control_id="18.10.9.3.11",
+        title="Обеспечение настройки «Настройка использования паролей для съемных дисков данных»",
+        description="Этот параметр политики позволяет указать, требуется ли пароль для разблокировки защищенных BitLocker съемных дисков данных.",
+        rationale="Этот параметр применяется при включении BitLocker, а не при разблокировке диска. BitLocker позволит разблокировать диск с помощью любого из доступных на диске средств защиты.",
+        reference="HKLM\SOFTWARE\Policies\Microsoft\FVE:RDVPassphrase",
+        check=num_18_10_9_3_11,
+        expected_text="0"
+    ),
+    Control(
+        control_id="18.9.4.2",
+        title="Обеспечение настройки «Удаленный узел разрешает делегирование неэкспортируемых учетных данных» в значение «Включено»",
+        description="Удаленный узел разрешает делегирование неэкспортируемых учетных данных. При использовании делегирования учетных данных устройства предоставляют экспортируемую версию учетных данных удаленному узлу.",
+        rationale="Режим ограниченного администратора был разработан для защиты учетных записей администраторов путем обеспечения того, чтобы повторно используемые учетные данные не хранились в памяти на удаленных устройствах, которые потенциально могут быть скомпрометированы.",
+        reference="HKLM\SOFTWARE\Policies\Microsoft\Windows\CredentialsDelegation:AllowProtectedCreds",
+        check=num_18_9_4_2,
+        expected_text="1"
+    ),
+    Control(
+        control_id="18.10.9.2.5",
+        title="Обеспечение настройки «Выбор способа восстановления защищенных BitLocker дисков операционной системы: Пароль восстановления» в значение «Включено",
+        description="Этот параметр политики позволяет управлять способом восстановления защищенных BitLocker дисков операционной системы при отсутствии необходимой ключевой информации для запуска.",
+        rationale="В разделе «Настройка хранения пользователем информации для восстановления BitLocker» выберите, разрешено ли пользователям создавать 48-значный пароль восстановления или 256-битный ключ восстановления, требуется это или запрещено.",
+        reference="HKLM\SOFTWARE\Policies\Microsoft\FVE:OSRecoveryPassword",
+        check=num_18_10_9_2_5,
+        expected_text="1"
     )
 ]
 
