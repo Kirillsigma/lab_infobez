@@ -8,7 +8,6 @@ from tkinter import messagebox
 from ttkbootstrap import Style
 from ttkbootstrap.widgets import Frame, Button, Label, Treeview, Progressbar
 
-# Глобальные ссылки на виджеты (для работы без классов)
 root: Optional[tk.Tk] = None
 progress: Optional[Progressbar] = None
 tree: Optional[Treeview] = None
@@ -18,10 +17,7 @@ FIO = "Мелешко К.Н."
 VARIANT = "13"
 DISCIPLINE = "Информационная безопасность"
 
-
-# ---------- утилиты ----------
 def verif_winreg(path: str, name: str):
-    """Безопасно читает значение из реестра HKLM и возвращает его. Бросает FileNotFoundError, если нет."""
     hkey = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, path, 0, winreg.KEY_READ)
     try:
         value, _ = winreg.QueryValueEx(hkey, name)
@@ -31,7 +27,6 @@ def verif_winreg(path: str, name: str):
 
 
 def run_control(control: tuple[str, str, Callable[[], bool]]) -> tuple[str, str, str]:
-    """Выполняет одну проверку, возвращает (id, title, status)."""
     cid, title, func = control
     try:
         ok = func()
@@ -40,8 +35,6 @@ def run_control(control: tuple[str, str, Callable[[], bool]]) -> tuple[str, str,
         status = "ERROR"
     return cid, title, status
 
-
-# ---------- проверки (возвращают bool) ----------
 def num_17_6_1() -> bool:
     subcategory = "Сведения об общем файловом ресурсе"
     command = ["auditpol", "/get", f"/subcategory:{subcategory}"]
@@ -51,7 +44,6 @@ def num_17_6_1() -> bool:
         return ("failure" in out) or ("сбой" in out) or ("отказ" in out)
     except subprocess.CalledProcessError:
         return False
-
 
 def num_2_3_1_5() -> bool:
     try:
@@ -66,7 +58,6 @@ def num_2_3_1_5() -> bool:
     except FileNotFoundError:
         return False
 
-
 def num_2_3_11_7() -> bool:
     try:
         value = verif_winreg(r"SYSTEM\CurrentControlSet\Control\Lsa", "LmCompatibilityLevel")
@@ -74,14 +65,12 @@ def num_2_3_11_7() -> bool:
     except FileNotFoundError:
         return False
 
-
 def num_2_3_10_10() -> bool:
     try:
         value = verif_winreg(r"SYSTEM\CurrentControlSet\Control\Lsa", "RestrictRemoteSAM")
         return value == "O:BAG:BAD:(A;;RC;;;BA)"
     except FileNotFoundError:
         return False
-
 
 def num_18_10_75_2_1() -> bool:
     try:
@@ -91,14 +80,12 @@ def num_18_10_75_2_1() -> bool:
     except FileNotFoundError:
         return False
 
-
 def num_18_10_56_3_3_2() -> bool:
     try:
         v = verif_winreg(r"SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services", "fDisableCcm")
         return v == 1
     except FileNotFoundError:
         return False
-
 
 def num_5_19() -> bool:
     try:
@@ -107,14 +94,12 @@ def num_5_19() -> bool:
     except FileNotFoundError:
         return False
 
-
 def num_18_9_20_1_6() -> bool:
     try:
         v = verif_winreg(r"SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer", "NoWebServices")
         return v == 1
     except FileNotFoundError:
         return False
-
 
 def num_5_11() -> bool:
     try:
@@ -123,14 +108,12 @@ def num_5_11() -> bool:
     except FileNotFoundError:
         return False
 
-
 def num_18_5_11() -> bool:
     try:
         v = verif_winreg(r"SYSTEM\CurrentControlSet\Services\TCPIP6\Parameters", "TcpMaxDataRetransmissions")
         return v == 3
     except FileNotFoundError:
         return False
-
 
 def num_18_10_92_4_1() -> bool:
     try:
@@ -139,14 +122,12 @@ def num_18_10_92_4_1() -> bool:
     except FileNotFoundError:
         return False
 
-
 def num_9_3_9() -> bool:
     try:
         v = verif_winreg(r"SOFTWARE\Policies\Microsoft\WindowsFirewall\PublicProfile\Logging", "LogSuccessfulConnections")
         return v == 1
     except FileNotFoundError:
         return False
-
 
 def num_18_10_9_3_11() -> bool:
     try:
@@ -155,14 +136,12 @@ def num_18_10_9_3_11() -> bool:
     except FileNotFoundError:
         return False
 
-
 def num_18_9_4_2() -> bool:
     try:
         v = verif_winreg(r"SOFTWARE\Policies\Microsoft\Windows\CredentialsDelegation", "AllowProtectedCreds")
         return v == 1
     except FileNotFoundError:
         return False
-
 
 def num_18_10_9_2_5() -> bool:
     try:
@@ -171,8 +150,6 @@ def num_18_10_9_2_5() -> bool:
     except FileNotFoundError:
         return False
 
-
-# ---------- список контролов: (id, title, func) ----------
 CONTROLS: List[tuple[str, str, Callable[[], bool]]] = [
     ("17.6.1", "Аудит: Detailed File Share включает 'Failure'", num_17_6_1),
     ("2.3.1.5", "Переименование гостевой учетной записи", num_2_3_1_5),
@@ -191,8 +168,6 @@ CONTROLS: List[tuple[str, str, Callable[[], bool]]] = [
     ("18.10.9.2.5", "Выбор способа восстановления защищенных BitLocker дисков операционной системы", num_18_10_9_2_5),
 ]
 
-
-# ---------- GUI-логика ----------
 def show_help():
     help_win = tk.Toplevel(root)
     help_win.title("Справка")
