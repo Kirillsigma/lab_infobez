@@ -1,8 +1,6 @@
 import subprocess
 import winreg
 from typing import Callable, List, Optional
-
-# GUI
 import tkinter as tk
 from tkinter import messagebox
 from ttkbootstrap import Style
@@ -12,7 +10,6 @@ root: Optional[tk.Tk] = None
 progress: Optional[Progressbar] = None
 tree: Optional[Treeview] = None
 
-# Данные для окна «Справка»
 FIO = "Мелешко К.Н."
 VARIANT = "13"
 DISCIPLINE = "Информационная безопасность"
